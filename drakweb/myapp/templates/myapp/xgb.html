@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Model Training Results</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    {% load static %}
+    <style>
+        body {
+            font-family: "Times New Roman", Georgia, Serif;
+            background: linear-gradient(90deg, #C7C5F4, #776BCC);
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: "Playfair Display";
+            letter-spacing: 5px;
+        }
+        .accuracy-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 100px auto 30px auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            color: black;
+            text-align: center;
+        }
+        .evaluation-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            color: black;
+            text-align: center;
+        }
+        .confusion-matrix {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            margin: 15px auto;
+            display: block;
+        }
+        .w3-top .w3-bar {
+            letter-spacing: 2px;
+        }
+        .nav-title {
+            font-family: "Playfair Display";
+        }
+    </style>
+</head>
+<body style="background: #776BCC;">
+<div class="w3-top">
+  <div class="w3-bar w3-white w3-padding w3-card">
+      <h2 class="w3-bar-item nav-title">BlackWindow: Monitoring the Dark Web for Cyber Security Information</h2>
+      <div class="w3-right w3-hide-small" style="font-family:Cooper Std Black;">
+          <a href="/homepage" class="w3-bar-item w3-button">Home</a>
+          <a href="/dataupload" class="w3-bar-item w3-button">Dataset Upload</a>
+          <a href="/modeltraining" class="w3-bar-item w3-button">Random Forest</a>
+          <a href="/xgb" class="w3-bar-item w3-button">XG Boost</a>
+          <a href="/predictdata" class="w3-bar-item w3-button">Data Prediction</a>
+      </div>
+  </div>
+</div>
+
+<div class="accuracy-container">
+    <h2>Model Trained Successfully</h2>
+    <h4>Accuracy:</h4>
+    <h4>{{data}}</h4>
+</div>
+
+<div class="evaluation-container">
+    <h2>Evaluation Matrix</h2>
+    <h3>Confusion Matrix - Random Forest</h3>
+    <img src="{% static 'images/f4.png' %}" alt="Random Forest Confusion Matrix" class="confusion-matrix">
+</div>
+
+</body>
+</html>

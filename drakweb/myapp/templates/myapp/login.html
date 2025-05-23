@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure Login | BlackWindow</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@500&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 100%);
+      height: 100vh;
+      overflow: hidden;
+      color: #e6e6e6;
+    }
+
+    .terminal-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px 1fr;
+      grid-template-rows: 80px auto 60px;
+      height: 100vh;
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .header {
+      grid-column: 1 / span 3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(5px);
+      position: relative;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      left: 30px;
+    }
+
+    .logo-icon {
+      font-size: 28px;
+      color: #00ff88;
+      margin-right: 10px;
+      text-shadow: 0 0 10px rgba(0,255,136,0.5);
+    }
+
+    .logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #00ff88, #0099ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+
+    .alert-banner {
+      background: rgba(255,59,48,0.2);
+      border: 1px solid rgba(255,59,48,0.5);
+      padding: 8px 20px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+
+    .alert-icon {
+      margin-right: 10px;
+      color: #ff3b30;
+    }
+
+    .alert-text {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .login-terminal {
+      grid-column: 2 / 3;
+      background: rgba(10,15,30,0.8);
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(0,153,255,0.2);
+      border: 1px solid rgba(0,153,255,0.3);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .terminal-header {
+      background: linear-gradient(90deg, #0a0f1e, #16213e);
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(0,153,255,0.2);
+    }
+
+    .terminal-buttons {
+      display: flex;
+      margin-right: 15px;
+    }
+
+    .terminal-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .btn-red { background: #ff5f56; }
+    .btn-yellow { background: #ffbd2e; }
+    .btn-green { background: #27c93f; }
+
+    .terminal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      color: rgba(0,255,136,0.8);
+      letter-spacing: 1px;
+    }
+
+    .terminal-body {
+      padding: 30px;
+      height: calc(100% - 40px);
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .input-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .input-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #0099ff;
+      font-weight: 600;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(0,153,255,0.3);
+      border-radius: 5px;
+      padding: 12px 15px 12px 40px;
+      color: #e6e6e6;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #00ff88;
+      box-shadow: 0 0 0 2px rgba(0,255,136,0.2);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 38px;
+      color: rgba(0,153,255,0.7);
+    }
+
+    .submit-btn {
+      background: linear-gradient(90deg, #00ff88, #0099ff);
+      color: #0a0f1e;
+      border: none;
+      padding: 14px;
+      border-radius: 5px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,255,136,0.3);
+    }
+
+    .submit-icon {
+      margin-left: 8px;
+    }
+
+    .info-panel {
+      background: rgba(10,15,30,0.6);
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid rgba(0,153,255,0.2);
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .panel-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      color: #0099ff;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0,153,255,0.3);
+      display: flex;
+      align-items: center;
+    }
+
+    .panel-icon {
+      margin-right: 10px;
+    }
+
+    .feature-list {
+      list-style-type: none;
+    }
+
+    .feature-item {
+      margin-bottom: 15px;
+      padding-left: 25px;
+      position: relative;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .feature-item:before {
+      content: ">";
+      position: absolute;
+      left: 0;
+      color: #00ff88;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .footer {
+      grid-column: 1 / span 3;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-separator {
+      margin: 0 10px;
+    }
+
+    /* Scrollbar */
+    .info-panel::-webkit-scrollbar {
+      width: 5px;
+    }
+    .info-panel::-webkit-scrollbar-thumb {
+      background: rgba(0,153,255,0.3);
+      border-radius: 5px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .terminal-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: 80px auto auto 60px;
+      }
+      .header, .footer {
+        grid-column: 1;
+      }
+      .login-terminal {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      .info-panel {
+        grid-column: 1;
+        grid-row: 3;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="terminal-grid">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <span class="logo-icon"><i class="fas fa-eye"></i></span>
+      <span class="logo-text">BLACKWINDOW : Drak Web Intelligence</span>
+    </div>
+    <div class="alert-banner">
+      <span class="alert-icon"><i class="fas fa-shield-alt"></i></span>
+      <span class="alert-text">RESTRICTED ACCESS - AUTHORIZED PERSONNEL ONLY</span>
+    </div>
+  </div>
+
+  <!-- Left Panel -->
+  <div class="info-panel">
+    <h3 class="panel-title"><span class="panel-icon"><i class="fas fa-terminal"></i></span>SYSTEM CAPABILITIES</h3>
+    <ul class="feature-list">
+      <li class="feature-item">Real-time dark web crawling and data collection</li>
+      <li class="feature-item">Advanced threat pattern recognition (AI/ML)</li>
+      <li class="feature-item">Underground marketplace monitoring</li>
+      <li class="feature-item">Threat actor profiling and tracking</li>
+      <li class="feature-item">Encrypted communication analysis</li>
+      <li class="feature-item">Automated threat intelligence reports</li>
+      <li class="feature-item">Multi-factor authentication required</li>
+    </ul>
+  </div>
+
+  <!-- Login Terminal -->
+  <div class="login-terminal">
+    <div class="terminal-header">
+      <div class="terminal-buttons">
+        <div class="terminal-btn btn-red"></div>
+        <div class="terminal-btn btn-yellow"></div>
+        <div class="terminal-btn btn-green"></div>
+      </div>
+      <div class="terminal-title">SECURE LOGIN</div>
+    </div>
+    <div class="terminal-body">
+      <form class="login-form" action="{% url 'login' %}" method="POST" id="loginForm">
+        {% csrf_token %}
+        <div class="input-group">
+          <label for="username" class="input-label">USERNAME</label>
+          <i class="input-icon fas fa-user-secret"></i>
+          <input type="text" id="username" class="input-field" placeholder="Enter access ID" name="uname" required>
+        </div>
+        <div class="input-group">
+          <label for="password" class="input-label">PASSPHRASE</label>
+          <i class="input-icon fas fa-key"></i>
+          <input type="password" id="password" class="input-field" placeholder="Enter secure passphrase" name="pwd" required>
+        </div>
+        <button type="submit" class="submit-btn">
+          INITIATE SESSION <i class="fas fa-sign-in-alt submit-icon"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="info-panel">
+    <h3 class="panel-title"><span class="panel-icon"><i class="fas fa-user-shield"></i></span>SECURITY PROTOCOLS</h3>
+    <ul class="feature-list">
+      <li class="feature-item">All connections encrypted with AES-256</li>
+      <li class="feature-item">Activity logging and audit trails</li>
+      <li class="feature-item">IP address whitelisting enabled</li>
+      <li class="feature-item">Session timeout: 15 minutes</li>
+      <li class="feature-item">Failed login attempts tracked</li>
+      <li class="feature-item">All access requires VPN connection</li>
+      <li class="feature-item">Regular security audits performed</li>
+    </ul>
+  </div>
+
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const btn = this.querySelector('.submit-btn');
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> AUTHENTICATING';
+    btn.style.background = '#16213e';
+    btn.style.color = '#0099ff';
+    btn.disabled = true;
+
+    // Simulate processing delay for security
+    setTimeout(() => {
+      this.submit();
+    }, 1500);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dataset Upload Status</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    {% load static %}
+    <style>
+        body {
+            font-family: "Times New Roman", Georgia, Serif;
+            background: linear-gradient(90deg, #C7C5F4, #776BCC);
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: "Playfair Display";
+            letter-spacing: 5px;
+        }
+        .content-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 600px;
+            margin: 120px auto 40px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            text-align: center;
+            color: #333;
+        }
+        .dataset-info {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-title {
+            font-family: "Playfair Display";
+            font-weight: bold;
+        }
+        .success-icon {
+            color: #4CAF50;
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="w3-top" style="z-index: 1000;">
+    <div class="w3-bar" style="
+        background: linear-gradient(135deg, #2b2d42, #1a1a2e);
+        padding: 12px 0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        letter-spacing: 1.5px;
+    ">
+        <div class="w3-content" style="max-width: 1200px;">
+            <div class="w3-bar w3-padding">
+                <h2 class="w3-bar-item" style="
+                    font-family: 'Montserrat', sans-serif;
+                    font-weight: 700;
+                    color: white;
+                    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+                    margin-right: 30px;
+                    font-size: 1.5em;
+                ">
+                    <i class="fas fa-eye" style="margin-right: 10px;"></i>
+                    BlackWindow
+                </h2>
+
+                <div class="w3-right">
+                    <a href="/homepage" class="w3-bar-item w3-button nav-button">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/dataupload" class="w3-bar-item w3-button nav-button">
+                        <i class="fas fa-upload"></i> Upload
+                    </a>
+                    <a href="/modeltraining" class="w3-bar-item w3-button nav-button">
+                        <i class="fas fa-tree"></i> Random Forest
+                    </a>
+                    <a href="/xgbst" class="w3-bar-item w3-button nav-button">
+                        <i class="fas fa-rocket"></i> XG Boost
+                    </a>
+                    <a href="/predictdata" class="w3-bar-item w3-button nav-button">
+                        <i class="fas fa-chart-line"></i> Predict
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .nav-button {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 500;
+        color: rgba(255,255,255,0.9) !important;
+        background: transparent !important;
+        border-radius: 4px;
+        margin: 0 6px;
+        padding: 10px 16px !important;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        font-size: 0.85em;
+        letter-spacing: 1px;
+    }
+
+    .nav-button:hover {
+        background: rgba(255,255,255,0.15) !important;
+        transform: translateY(-2px);
+        color: white !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .nav-button i {
+        margin-right: 8px;
+    }
+</style>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Add Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Main Content -->
+<div class="content-card">
+    <div class="w3-container w3-center">
+        <div class="success-icon">✓</div>
+        <h2 style="color: #4CAF50;">Dataset Uploaded Successfully</h2>
+
+        <div class="dataset-info">
+            <h3><i class="fa fa-database w3-margin-right"></i> Training Dataset: <strong>{{data1}}</strong> records</h3>
+        </div>
+
+        <div class="dataset-info">
+            <h3><i class="fa fa-database w3-margin-right"></i> Testing Dataset: <strong>{{data2}}</strong> records</h3>
+        </div>
+
+        <p style="margin-top: 30px;">
+            <a href="/modeltraining" class="w3-button w3-black w3-padding-large w3-large">
+                Proceed to Model Training
+            </a>
+        </p>
+    </div>
+</div>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</body>
+</html>
