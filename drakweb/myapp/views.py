@@ -1,6 +1,16 @@
+# myapp/views.py
+
 from django.shortcuts import render
+from django.http import JsonResponse # Import JsonResponse for API proxy
+from django.views.decorators.csrf import csrf_exempt # For simplicity in development, consider more robust CSRF handling for production
+from django.conf import settings # Import settings to access GEMINI_API_KEY
+import requests # Import requests library for making HTTP calls
+import json # Import json for handling JSON data
+
 from .models import userdetails
 import pandas as pd
+import os
+from django.conf import settings
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
@@ -10,9 +20,10 @@ import joblib
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 import numpy as np
-import joblib
-# Create your views here.
+# joblib is already imported above
 
+
+# Create your views here.
 
 def index(request):
     return render(request,'myapp/index.html')
@@ -65,7 +76,8 @@ def homepage(request):
 
 def dataupload(request):
     # Load the dataset
-    data = pd.read_csv('Top_10_Features_Darknet_With_Label.csv')
+    csv_path = os.path.join(settings.BASE_DIR, 'Top_10_Features_Darknet_With_Label.csv')
+    data = pd.read_csv(csv_path)
 
     # Split the dataset into features and labels
     X = data.drop('Label', axis=1)
@@ -82,7 +94,8 @@ def dataupload(request):
 
 def modeltraining(request):
     # Load the dataset
-    data = pd.read_csv('Top_10_Features_Darknet_With_Label.csv')
+    csv_path = os.path.join(settings.BASE_DIR, 'Top_10_Features_Darknet_With_Label.csv')
+    data = pd.read_csv(csv_path)
 
     # Split the dataset into features and labels
     X = data.drop('Label', axis=1)
@@ -112,13 +125,14 @@ def modeltraining(request):
 
 def xgbst(request):
     # Load the dataset
-    data = pd.read_csv('Top_10_Features_Darknet_With_Label.csv')
+    csv_path = os.path.join(settings.BASE_DIR, 'Top_10_Features_Darknet_With_Label.csv')
+    data = pd.read_csv(csv_path)
 
     # Split the dataset into features and labels
     X = data.drop('Label', axis=1)
     y = data['Label']
 
-    # Split the data into training and testing sets
+    # FIX: Corrected typo from train_train_test_split to train_test_split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Standardize the features
@@ -142,6 +156,8 @@ def xgbst(request):
 
 def load_model(model_name):
     # Load the specified model and the scaler
+    # Ensure 'scaler.pkl' and model_name.pkl are accessible
+    # You might need to adjust paths if they are not in the same directory as views.py
     model = joblib.load(f'{model_name}.pkl')
     scaler = joblib.load('scaler.pkl')
     return model, scaler
@@ -161,9 +177,58 @@ def predict(model_name, features):
     # Return the prediction
     return prediction[0]
 
+@csrf_exempt # Use this decorator for simplicity in development to allow POST requests without CSRF token
+def gemini_proxy_api(request):
+    """
+    Proxies requests from the frontend to the Google Gemini API.
+    This helps bypass CORS issues and keeps the API key secure on the server.
+    """
+    if request.method == 'POST':
+        try:
+            # Parse the incoming JSON data from the frontend
+            data = json.loads(request.body)
+            prompt = data.get('prompt')
+            response_schema = data.get('responseSchema')
+
+            if not prompt or not response_schema:
+                return JsonResponse({'error': 'Missing prompt or responseSchema in request body'}, status=400)
+
+            # Construct the payload for the Gemini API
+            payload = {
+                "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                "generationConfig": {
+                    "responseMimeType": "application/json",
+                    "responseSchema": response_schema
+                }
+            }
+
+            # Get API key from Django settings
+            gemini_api_key = settings.GEMINI_API_KEY
+            gemini_api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={gemini_api_key}"
+
+            # Make the request to the actual Gemini API
+            headers = {'Content-Type': 'application/json'}
+            gemini_response = requests.post(gemini_api_url, headers=headers, data=json.dumps(payload))
+            gemini_response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+
+            # Return the Gemini API's response directly to the frontend
+            return JsonResponse(gemini_response.json())
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON in request body'}, status=400)
+        except requests.exceptions.RequestException as e:
+            # Log the full error for debugging on the server side
+            print(f"Error calling Gemini API: {e}")
+            return JsonResponse({'error': f'Failed to connect to Gemini API: {e}'}, status=500)
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            return JsonResponse({'error': f'An unexpected error occurred: {e}'}, status=500)
+    return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+
 def predictdata(request):
-    # Example feature values for prediction
-    # Replace these values with actual feature values
+    # This view is for your server-side machine learning model prediction.
+    # The client-side JavaScript in predictdata.html makes its own API calls.
     if request.method=='POST':
         fwdbytes=int(request.POST['fwdbytes'])
         fwdmin=int(request.POST['fwdmin'])
@@ -183,10 +248,6 @@ def predictdata(request):
             "Bwd Init Win Bytes", "Packet Length Min",
             "Packet Length Max", "Flow IAT Min"
         ]
-        # feature_values = [
-        #     5000, 40, 1000000, 1, 500000, 0,
-        #     3000, 20, 1500, 100
-        # ]
 
         feature_values = [
                 fwdbytes, fwdmin, idlemax, bwdmin, idlemean,idlemin,

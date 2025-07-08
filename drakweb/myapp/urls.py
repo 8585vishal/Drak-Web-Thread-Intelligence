@@ -1,3 +1,5 @@
+# drakweb/urls.py
+
 """
 URL configuration for drakweb project.
 
@@ -15,8 +17,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from . import views
+from django.urls import path, include # Ensure 'include' is imported
+from django.conf import settings # Import settings
+from django.conf.urls.static import static # Import static function
+
+# Assuming 'views' here refers to your myapp's views due to your project structure.
+# A more standard Django approach would be:
+# from myapp import views
+# or
+# path('', include('myapp.urls')),
+# but given your existing structure, this might be how it's set up.
+from myapp import views # Explicitly import views from myapp
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -28,4 +40,14 @@ urlpatterns = [
     path('modeltraining', views.modeltraining, name='modeltraining'),
     path('predictdata', views.predictdata, name='predictdata'),
     path('xgbst', views.xgbst, name='xgbst'),
+
+    # New URL for the Gemini API proxy
+    path('api/gemini-proxy/', views.gemini_proxy_api, name='gemini_proxy_api'),
 ]
+
+# Serve static files during development (IMPORTANT for {% load static %})
+# This block is essential for Django to serve static files like CSS/JS in development.
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # If you have media files uploaded by users, you might also need:
+    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

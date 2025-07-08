@@ -2,29 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Model Training Result</title>
+    <title>XG Boost Model Results | BlackWindow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     {% load static %}
     <style>
         body {
-            font-family: "Times New Roman", Georgia, Serif;
-            background: linear-gradient(90deg, #C7C5F4, #776BCC);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e); /* Consistent with predictdata.html */
             margin: 0;
             padding: 0;
+            color: #e6e6e6; /* Consistent with predictdata.html */
         }
         h1, h2, h3, h4, h5, h6 {
-            font-family: "Playfair Display";
-            letter-spacing: 5px;
+            font-family: "Orbitron", sans-serif; /* Consistent with predictdata.html */
+            letter-spacing: 1px; /* Consistent with predictdata.html */
         }
         .content-container {
-            background: white;
+            background: rgba(10,15,30,0.8); /* Consistent with predictdata.html */
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 15px; /* Consistent with predictdata.html */
             max-width: 700px;
-            margin: 20px auto;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            color: black;
+            margin: 120px auto 40px auto; /* Adjusted margin for navbar */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Consistent with predictdata.html */
+            color: #e6e6e6; /* Text color for content container */
             text-align: center;
+            border: 1px solid rgba(0,153,255,0.3); /* Consistent with predictdata.html */
         }
         .confusion-matrix {
             max-width: 600px;
@@ -32,16 +36,36 @@
             height: auto;
             margin: 20px auto;
             display: block;
+            border-radius: 8px; /* Rounded corners for image */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Shadow for image */
         }
-        .nav-title {
-            font-family: "Playfair Display";
+        .nav-button {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 500;
+            color: rgba(255,255,255,0.9) !important;
+            background: transparent !important;
+            border-radius: 4px;
+            margin: 0 6px;
+            padding: 10px 16px !important;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+        }
+        .nav-button:hover {
+            background: rgba(255,255,255,0.15) !important;
+            transform: translateY(-2px);
+            color: white !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .nav-button i {
+            margin-right: 8px;
         }
     </style>
 </head>
-<body style="background: #776BCC;">
+<body>
 
-<!-- Top Navigation Bar -->
-<!-- Navigation Bar -->
+<!-- Navigation Bar (Copied from predictdata.html for consistency) -->
 <div class="w3-top" style="z-index: 1000;">
     <div class="w3-bar" style="
         background: linear-gradient(135deg, #2b2d42, #1a1a2e);
@@ -85,53 +109,22 @@
     </div>
 </div>
 
-<style>
-    .nav-button {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-weight: 500;
-        color: rgba(255,255,255,0.9) !important;
-        background: transparent !important;
-        border-radius: 4px;
-        margin: 0 6px;
-        padding: 10px 16px !important;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        font-size: 0.85em;
-        letter-spacing: 1px;
-    }
-
-    .nav-button:hover {
-        background: rgba(255,255,255,0.15) !important;
-        transform: translateY(-2px);
-        color: white !important;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .nav-button i {
-        margin-right: 8px;
-    }
-</style>
-
-<!-- Add Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-<!-- Add Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
-
 <!-- Main Content -->
-<div style="padding-top: 120px;">  <!-- Space for fixed navbar -->
-    <div class="content-container">
-        <h2>Model Trained Successfully</h2>
-        <h4>Accuracy:</h4>
-        <h4>{{ data }}</h4>
-    </div>
+<div class="content-container">
+    <h2 style="color: #00ff88;">XG Boost Model Trained Successfully</h2>
+    <h4>Accuracy:</h4>
+    <h4 style="color: #00ff88;">{{ data }}%</h4>
+</div>
 
-    <!-- Evaluation Matrix -->
-    <div class="content-container">
-        <h2>Evaluation Matrix</h2>
-        <h3>Confusion Matrix - Random Forest</h3>
-        <img src="{% static 'images/f4.png' %}" alt="Random Forest Confusion Matrix" class="confusion-matrix">
-    </div>
+<!-- Evaluation Matrix -->
+<div class="content-container">
+    <h2 style="color: #00ff88;">Evaluation Matrix</h2>
+    <h3 style="color: #e6e6e6;">Confusion Matrix - XG Boost</h3>
+    <!-- Placeholder for XGBoost Confusion Matrix.
+         You need to place your XGBoost confusion matrix image in myapp/static/images/
+         and name it 'xgboost_confusion_matrix.png' or update the path here. -->
+    <img src="{% static 'images/f4.png' %}" alt="XG Boost Confusion Matrix" class="confusion-matrix">
+    <p style="font-size: 12px; color: #bbb;"></p>
 </div>
 
 </body>

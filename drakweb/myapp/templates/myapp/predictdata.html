@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Threat Prediction | BlackWindow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     {% load static %}
@@ -190,6 +191,75 @@
         .nav-button i {
             margin-right: 8px;
         }
+        .url-prediction-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0,153,255,0.3);
+        }
+        .url-prediction-section h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00ff88;
+        }
+        .predicted-values-display {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(0,153,255,0.2);
+            display: none; /* Hidden by default */
+        }
+        .predicted-values-display p {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #e6e6e6;
+        }
+        .predicted-values-display strong {
+            color: #00ff88;
+        }
+        .leaked-details {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255,255,255,0.2);
+            font-size: 13px;
+            color: #ffeb3b; /* Yellowish color for attention */
+        }
+        .leaked-details strong {
+            color: #ffeb3b;
+        }
+        /* Style for the copy button */
+        .copy-btn {
+            background: linear-gradient(90deg, #0099ff, #00ff88); /* Blue to green gradient */
+            color: #0a0f1e;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: block; /* Make it a block element to take full width or align */
+            width: fit-content; /* Adjust width to content */
+            margin-left: auto; /* Center the button */
+            margin-right: auto;
+        }
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,153,255,0.3);
+        }
+        .copy-btn i {
+            margin-right: 8px;
+        }
+        .attack-info {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #ccc;
+        }
+        .attack-info strong {
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -242,9 +312,39 @@
 <div class="prediction-container">
     <h2 style="text-align: center; margin-bottom: 30px; color: #00ff88;">THREAT PREDICTION DASHBOARD</h2>
 
-    <form class="login" id="threatPredictionForm" method="POST">
-        {% csrf_token %}
+    <!-- Moved REAL-TIME URL THREAT ANALYSIS section to the top -->
+    <div class="url-prediction-section">
+        <h3>REAL-TIME URL THREAT ANALYSIS</h3>
+        <div class="form-group">
+            <label for="urlInput">Enter Website URL</label>
+            <input type="url" class="form-control" id="urlInput" placeholder="e.g., https://example.com/malicious-site" required>
+        </div>
+        <button type="button" class="submit-btn" id="predictUrlBtn">
+            <i class="fas fa-link"></i> Analyze URL
+        </button>
 
+        <!-- Display for Predicted Values from URL -->
+        <div id="predictedValuesDisplay" class="predicted-values-display">
+            <h4>Simulated Traffic Parameters from URL:</h4>
+            <p>FWD Init Win Bytes: <strong id="urlFwdBytes"></strong></p>
+            <p>Fwd Seg Size Min: <strong id="urlFwdMin"></strong></p>
+            <p>Idle Max: <strong id="urlIdleMax"></strong></p>
+            <p>Bwd Packet Length Min: <strong id="urlBwdMin"></strong></p>
+            <p>Idle Mean: <strong id="urlIdleMean"></strong></p>
+            <p>Idle Min: <strong id="urlIdleMin"></strong></p>
+            <p>Bwd Init Win Bytes: <strong id="urlBwdBytes"></strong></p>
+            <p>Packet Length Min: <strong id="urlPktLenMin"></strong></p>
+            <p>Packet Length Max: <strong id="urlPktLenMax"></strong></p>
+            <p>Flow IAT Min: <strong id="urlFlowMin"></strong></p>
+            <button type="button" class="copy-btn" id="copyValuesBtn">
+                <i class="fas fa-copy"></i> Copy Values to Form
+            </button>
+        </div>
+    </div>
+
+    <!-- Original THREAT PREDICTION DASHBOARD form -->
+    <form class="login" id="threatPredictionForm">
+        <h3 style="text-align: center; margin-bottom: 30px; color: #0099ff; border-top: 1px solid rgba(0,153,255,0.3); padding-top: 30px;">MANUAL TRAFFIC PARAMETER INPUT</h3>
         <div class="form-group">
             <label for="fwdbytes">FWD Init Win Bytes</label>
             <input type="number" class="form-control" id="fwdbytes" placeholder="e.g., 5000" name="fwdbytes" required>
@@ -313,30 +413,19 @@
                 <i class="fas fa-bolt"></i> Analyze Traffic
             </button>
         </div>
-
-        {% if data %}
-        <div class="result-container">
-            <h3>Prediction Result</h3>
-            <p style="font-size: 18px; margin-top: 10px;">
-                {% if "Benign" in data %}
-                    <span style="color: green; font-weight: bold;">{{ data }}</span>
-                {% else %}
-                    <span style="color: red; font-weight: bold;">{{ data }}</span>
-                {% endif %}
-            </p>
-        </div>
-        {% endif %}
     </form>
 
     <!-- Threat Simulation Display -->
     <div id="threatDisplay" class="threat-display">
         <div class="threat-header">
             <div class="threat-title">MALICIOUS ACTIVITY DETECTED</div>
-            <div class="threat-level">CRITICAL</div>
         </div>
         <div class="threat-details">
-            Our systems have identified suspicious network patterns consistent with dark web infiltration attempts.
-            Immediate action is recommended to prevent potential data exfiltration.
+            <p id="threatGeneralDescription">Our systems have identified suspicious network patterns consistent with dark web infiltration attempts.
+            Immediate action is recommended to prevent potential data exfiltration.</p>
+            <p class="attack-info" id="attackTypeNameDisplay"><strong>Attack Type:</strong> N/A</p>
+            <p class="attack-info" id="attackDescriptionDisplay"><strong>Description:</strong> N/A</p>
+            <p class="leaked-details" id="leakedDetailsDisplay"><strong>Leaked Details:</strong> N/A</p>
         </div>
 
         <div class="threat-metrics">
@@ -400,14 +489,7 @@
         document.getElementById('flowmin').value = '100';
     }
 
-    // Threat types and messages
-    const threatTypes = [
-        { name: "Advanced Persistent Threat", code: "APT", confidence: "85-98%", risk: "Critical" },
-        { name: "Data Exfiltration", code: "EXFIL", confidence: "75-90%", risk: "High" },
-        { name: "Dark Web Communication", code: "DWC", confidence: "65-80%", risk: "Medium" },
-        { name: "Malware Beaconing", code: "MB", confidence: "90-95%", risk: "Critical" }
-    ];
-
+    // Threat types and messages (used for timeline events)
     const eventMessages = [
         "Unusual outbound network traffic detected",
         "Connection to known malicious IP address",
@@ -416,60 +498,384 @@
         "Communication with dark web marketplace",
         "Malicious payload signature match",
         "Command and control server communication",
-        "Data encryption patterns consistent with exfiltration"
+        "Data encryption patterns consistent with exfiltration",
+        "Potential data breach identified",
+        "Sensitive information exposed on dark web forum"
     ];
 
-    // Simulate threat detection
-    document.getElementById('threatPredictionForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    // Function to handle prediction using Gemini API for both manual and URL input
+    async function analyzeTrafficWithApi(inputData, isUrlInput = false) {
+        console.log(`analyzeTrafficWithApi called. Is URL Input: ${isUrlInput}`);
+        console.log("Input Data:", inputData);
 
-        // Show loading state
-        const btn = document.getElementById('predictBtn');
-        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ANALYZING';
-        btn.disabled = true;
+        const btn = isUrlInput ? document.getElementById('predictUrlBtn') : document.getElementById('predictBtn');
+        const originalBtnText = isUrlInput ? '<i class="fas fa-link"></i> Analyze URL' : '<i class="fas fa-bolt"></i> Analyze Traffic';
 
-        // Simulate analysis delay
-        setTimeout(() => {
-            // Randomly determine if we show benign or threat
-            const showThreat = Math.random() > 0.3; // 70% chance of threat
+        if (btn) { // Check if button exists before modifying
+            btn.innerHTML = isUrlInput ? '<i class="fas fa-circle-notch fa-spin"></i> ANALYZING URL' : '<i class="fas fa-circle-notch fa-spin"></i> ANALYZING';
+            btn.disabled = true;
+        }
 
-            if (showThreat) {
-                // Select random threat
-                const threat = threatTypes[Math.floor(Math.random() * threatTypes.length)];
-                const confidence = Math.floor(Math.random() * (parseInt(threat.confidence.split('-')[1]) - parseInt(threat.confidence.split('-')[0]))) + parseInt(threat.confidence.split('-')[0]);
+        // Hide previous displays
+        const threatDisplay = document.getElementById('threatDisplay');
+        if (threatDisplay) threatDisplay.style.display = 'none';
+        const predictedValuesDisplay = document.getElementById('predictedValuesDisplay');
+        if (predictedValuesDisplay) predictedValuesDisplay.style.display = 'none';
 
-                // Update threat display
-                document.getElementById('threatConfidence').textContent = confidence + '%';
-                document.getElementById('attackType').textContent = threat.code;
-                document.getElementById('riskLevel').textContent = threat.risk;
 
-                // Update timeline events
-                const now = new Date();
-                document.getElementById('time1').textContent = "Just Now";
-                document.getElementById('event1').textContent = eventMessages[Math.floor(Math.random() * eventMessages.length)];
+        // IMPORTANT: This API key is now retrieved from Django settings via the proxy.
+        // The frontend no longer needs it directly.
+        const proxyUrl = "/api/gemini-proxy/"; // This is the new endpoint on your Django server
 
-                document.getElementById('time2').textContent = "2 minutes ago";
-                document.getElementById('event2').textContent = eventMessages[Math.floor(Math.random() * eventMessages.length)];
+        let prompt;
+        let responseSchema; // Define responseSchema here
 
-                document.getElementById('time3').textContent = "5 minutes ago";
-                document.getElementById('event3').textContent = eventMessages[Math.floor(Math.random() * eventMessages.length)];
+        if (isUrlInput) {
+            prompt = `Analyze the following URL for potential cyber threats, specifically looking for indicators of dark web communication or data leakage. Provide simulated network traffic parameters.
+            URL: ${inputData.url}
 
-                // Show threat display
-                document.getElementById('threatDisplay').style.display = 'block';
-            } else {
-                // Hide threat display for benign
-                document.getElementById('threatDisplay').style.display = 'none';
+            Provide the response in a JSON format with the following keys:
+            - isThreat (boolean): true if a threat is detected, false otherwise.
+            - confidence (number): Threat confidence percentage (0-100).
+            - attackType (string): Short code for attack type (e.g., APT, EXFIL - Data Exfiltration, DWC - Dark Web Communication, MB - Malware Beaconing, BENIGN).
+            - attackTypeName (string): Full name of the attack type (e.g., "Advanced Persistent Threat", "Data Exfiltration", "Dark Web Communication", "Malware Beaconing", "Benign").
+            - attackDescription (string): A brief, professional description of this attack type.
+            - riskLevel (string): Risk level (e.g., Critical, High, Medium, Low, None).
+            - leakedDetails (string): A brief description of what kind of information might be leaked if attackType is 'DWC' or 'EXFIL'. If no specific details, state 'N/A'.
+            - fwdbytes (number): Simulated FWD Init Win Bytes (1000-10000).
+            - fwdmin (number): Simulated Fwd Seg Size Min (20-100).
+            - idlemax (number): Simulated Idle Max (500000-2000000).
+            - bwdmin (number): Simulated Bwd Packet Length Min (0-50).
+            - idlemean (number): Simulated Idle Mean (200000-800000).
+            - idlemin (number): Simulated Idle Min (0-100000).
+            - bwdbytes (number): Simulated Bwd Init Win Bytes (1000-5000).
+            - pktlenmin (number): Simulated Packet Length Min (10-100).
+            - pktlenmax (number): Simulated Packet Length Max (1000-2000).
+            - flowmin (number): Simulated Flow IAT Min (50-500).
+
+            If the URL seems benign, set isThreat to false and provide benign-like values for all parameters, 'N/A' for leakedDetails, and appropriate benign attackTypeName and attackDescription.
+            If the URL suggests dark web activity or data leakage, set isThreat to true and choose 'DWC' or 'EXFIL' for attackType, with appropriate confidence and riskLevel, and provide a relevant description for leakedDetails, attackTypeName, and attackDescription.
+            `;
+            responseSchema = {
+                type: "OBJECT",
+                properties: {
+                    "isThreat": { "type": "BOOLEAN" },
+                    "confidence": { "type": "NUMBER" },
+                    "attackType": { "type": "STRING" },
+                    "attackTypeName": { "type": "STRING" },
+                    "attackDescription": { "type": "STRING" },
+                    "riskLevel": { "type": "STRING" },
+                    "leakedDetails": { "type": "STRING" },
+                    "fwdbytes": { "type": "NUMBER" },
+                    "fwdmin": { "type": "NUMBER" },
+                    "idlemax": { "type": "NUMBER" },
+                    "bwdmin": { "type": "NUMBER" },
+                    "idlemean": { "type": "NUMBER" },
+                    "idlemin": { "type": "NUMBER" },
+                    "bwdbytes": { "type": "NUMBER" },
+                    "pktlenmin": { "type": "NUMBER" },
+                    "pktlenmax": { "type": "NUMBER" },
+                    "flowmin": { "type": "NUMBER" }
+                },
+                "required": [
+                    "isThreat", "confidence", "attackType", "attackTypeName", "attackDescription", "riskLevel", "leakedDetails",
+                    "fwdbytes", "fwdmin", "idlemax", "bwdmin", "idlemean",
+                    "idlemin", "bwdbytes", "pktlenmin", "pktlenmax", "flowmin"
+                ]
+            };
+        } else {
+            // Manual input analysis
+            prompt = `Analyze the following network traffic parameters for potential cyber threats, specifically looking for indicators of dark web communication or data leakage.
+            Parameters: FWD Init Win Bytes=${inputData.fwdbytes}, Fwd Seg Size Min=${inputData.fwdmin}, Idle Max=${inputData.idlemax}, Bwd Packet Length Min=${inputData.bwdmin}, Idle Mean=${inputData.idlemean}, Idle Min=${inputData.idlemin}, Bwd Init Win Bytes=${inputData.bwdbytes}, Packet Length Min=${inputData.pktlenmin}, Packet Length Max=${inputData.pktlenmax}, Flow IAT Min=${inputData.flowmin}.
+
+            Provide the response in a JSON format with the following keys:
+            - isThreat (boolean): true if a threat is detected, false otherwise.
+            - confidence (number): Threat confidence percentage (0-100).
+            - attackType (string): Short code for attack type (e.g., APT, EXFIL - Data Exfiltration, DWC - Dark Web Communication, MB - Malware Beaconing, BENIGN).
+            - attackTypeName (string): Full name of the attack type (e.g., "Advanced Persistent Threat", "Data Exfiltration", "Dark Web Communication", "Malware Beaconing", "Benign").
+            - attackDescription (string): A brief, professional description of this attack type.
+            - riskLevel (string): Risk level (e.g., Critical, High, Medium, Low, None).
+            - leakedDetails (string): A brief description of what kind of information might be leaked if attackType is 'DWC' or 'EXFIL'. If no specific details, state 'N/A'.
+            - fwdbytes (number): The FWD Init Win Bytes value provided.
+            - fwdmin (number): The Fwd Seg Size Min value provided.
+            - idlemax (number): The Idle Max value provided.
+            - bwdmin (number): The Bwd Packet Length Min value provided.
+            - idlemean (number): The Idle Mean value provided.
+            - idlemin (number): The Idle Min value provided.
+            - bwdbytes (number): The Bwd Init Win Bytes value provided.
+            - pktlenmin (number): The Packet Length Min value provided.
+            - pktlenmax (number): The Packet Length Max value provided.
+            - flowmin (number): The Flow IAT Min value provided.
+
+            If the parameters seem benign, set isThreat to false and provide benign-like details and 'N/A' for leakedDetails, and appropriate benign attackTypeName and attackDescription.
+            If the parameters suggest dark web activity or data leakage, set isThreat to true and choose 'DWC' or 'EXFIL' for attackType, with appropriate confidence and riskLevel, and provide a relevant description for leakedDetails, attackTypeName, and attackDescription.
+            `;
+            responseSchema = {
+                type: "OBJECT",
+                properties: {
+                    "isThreat": { "type": "BOOLEAN" },
+                    "confidence": { "type": "NUMBER" },
+                    "attackType": { "type": "STRING" },
+                    "attackTypeName": { "type": "STRING" },
+                    "attackDescription": { "type": "STRING" },
+                    "riskLevel": { "type": "STRING" },
+                    "leakedDetails": { "type": "STRING" },
+                    "fwdbytes": { "type": "NUMBER" },
+                    "fwdmin": { "type": "NUMBER" },
+                    "idlemax": { "type": "NUMBER" },
+                    "bwdmin": { "type": "NUMBER" },
+                    "idlemean": { "type": "NUMBER" },
+                    "idlemin": { "type": "NUMBER" },
+                    "bwdbytes": { "type": "NUMBER" },
+                    "pktlenmin": { "type": "NUMBER" },
+                    "pktlenmax": { "type": "NUMBER" },
+                    "flowmin": { "type": "NUMBER" }
+                },
+                "required": [
+                    "isThreat", "confidence", "attackType", "attackTypeName", "attackDescription", "riskLevel", "leakedDetails",
+                    "fwdbytes", "fwdmin", "idlemax", "bwdmin", "idlemean",
+                    "idlemin", "bwdbytes", "pktlenmin", "pktlenmax", "flowmin"
+                ]
+            };
+        }
+
+        try {
+            // FIX: Changed API call to your Django proxy endpoint
+            const response = await fetch(proxyUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt, responseSchema: responseSchema }) // Send prompt and schema to proxy
+            });
+
+            if (!response.ok) {
+                // The error message here will now come from your Django backend if it fails
+                throw new Error(`HTTP error! Status: ${response.status}. Check your Django server logs for details on the proxy call.`);
             }
 
-            // Reset button
-            btn.innerHTML = '<i class="fas fa-bolt"></i> Analyze Traffic';
-            btn.disabled = false;
+            const result = await response.json();
+            console.log("Proxy API Response:", result); // Log the response from your Django proxy
 
-            // In a real app, you would submit the form here
-            // this.submit();
+            // Check if the proxy returned an error from Gemini
+            if (result.error) {
+                throw new Error(`Gemini API Error (via proxy): ${result.error}`);
+            }
 
-        }, 2000);
+            // Assuming the proxy successfully returns the Gemini API's candidate structure
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+
+                const jsonString = result.candidates[0].content.parts[0].text;
+                const predictionData = JSON.parse(jsonString);
+                console.log("Parsed Prediction Data:", predictionData);
+
+                // Update threat display based on LLM's prediction
+                if (predictionData.isThreat) {
+                    const threatConfidenceElement = document.getElementById('threatConfidence');
+                    if (threatConfidenceElement) threatConfidenceElement.textContent = predictionData.confidence + '%';
+
+                    const attackTypeElement = document.getElementById('attackType');
+                    if (attackTypeElement) attackTypeElement.textContent = predictionData.attackType;
+
+                    const riskLevelElement = document.getElementById('riskLevel');
+                    if (riskLevelElement) riskLevelElement.textContent = predictionData.riskLevel;
+
+                    const attackTypeNameDisplayElement = document.getElementById('attackTypeNameDisplay');
+                    if (attackTypeNameDisplayElement) attackTypeNameDisplayElement.innerHTML = `<strong>Attack Type:</strong> ${predictionData.attackTypeName}`;
+
+                    const attackDescriptionDisplayElement = document.getElementById('attackDescriptionDisplay');
+                    if (attackDescriptionDisplayElement) attackDescriptionDisplayElement.innerHTML = `<strong>Description:</strong> ${predictionData.attackDescription}`;
+
+                    const leakedDetailsDisplayElement = document.getElementById('leakedDetailsDisplay');
+                    if (leakedDetailsDisplayElement) leakedDetailsDisplayElement.innerHTML = `<strong>Leaked Details:</strong> ${predictionData.leakedDetails}`;
+
+                    const now = new Date();
+                    const time1Element = document.getElementById('time1');
+                    if (time1Element) time1Element.textContent = "Just Now";
+                    const event1Element = document.getElementById('event1');
+                    if (event1Element) event1Element.textContent = eventMessages[Math.floor(Math.random() * eventMessages.length)];
+
+                    const time2Element = document.getElementById('time2');
+                    if (time2Element) time2Element.textContent = "2 minutes ago";
+                    const event2Element = document.getElementById('event2');
+                    if (event2Element) event2Element.textContent = eventMessages[Math.floor(Math.random() * eventMessages.length)];
+
+                    const time3Element = document.getElementById('time3');
+                    if (time3Element) time3Element.textContent = "5 minutes ago";
+                    const event3Element = document.getElementById('event3');
+                    if (event3Element) event3Element.textContent = eventMessages[Math.floor(Math.random() * eventMessages.length)];
+
+                    if (threatDisplay) threatDisplay.style.display = 'block';
+                } else {
+                    if (threatDisplay) threatDisplay.style.display = 'none';
+                    const attackTypeNameDisplayElement = document.getElementById('attackTypeNameDisplay');
+                    if (attackTypeNameDisplayElement) attackTypeNameDisplayElement.innerHTML = '<strong>Attack Type:</strong> N/A';
+                    const attackDescriptionDisplayElement = document.getElementById('attackDescriptionDisplay');
+                    if (attackDescriptionDisplayElement) attackDescriptionDisplayElement.innerHTML = '<strong>Description:</strong> N/A';
+                    const leakedDetailsDisplayElement = document.getElementById('leakedDetailsDisplay');
+                    if (leakedDetailsDisplayElement) leakedDetailsDisplayElement.innerHTML = '<strong>Leaked Details:</strong> N/A';
+                }
+
+                // Display simulated values (for URL input, these are generated by LLM; for manual, they are the input)
+                const urlFwdBytesElement = document.getElementById('urlFwdBytes');
+                if (urlFwdBytesElement) urlFwdBytesElement.textContent = predictionData.fwdbytes;
+                const urlFwdMinElement = document.getElementById('urlFwdMin');
+                if (urlFwdMinElement) urlFwdMinElement.textContent = predictionData.fwdmin;
+                const urlIdleMaxElement = document.getElementById('urlIdleMax');
+                if (urlIdleMaxElement) urlIdleMaxElement.textContent = predictionData.idlemax;
+                const urlBwdMinElement = document.getElementById('urlBwdMin');
+                if (urlBwdMinElement) urlBwdMinElement.textContent = predictionData.bwdmin;
+                const urlIdleMeanElement = document.getElementById('urlIdleMean');
+                if (urlIdleMeanElement) urlIdleMeanElement.textContent = predictionData.idlemean;
+                const urlIdleMinElement = document.getElementById('urlIdleMin');
+                if (urlIdleMinElement) urlIdleMinElement.textContent = predictionData.idlemin;
+                const urlBwdBytesElement = document.getElementById('urlBwdBytes');
+                if (urlBwdBytesElement) urlBwdBytesElement.textContent = predictionData.bwdbytes;
+                const urlPktLenMinElement = document.getElementById('urlPktLenMin');
+                if (urlPktLenMinElement) urlPktLenMinElement.textContent = predictionData.pktlenmin;
+                const urlPktLenMaxElement = document.getElementById('urlPktLenMax');
+                if (urlPktLenMaxElement) urlPktLenMaxElement.textContent = predictionData.pktlenmax;
+                const urlFlowMinElement = document.getElementById('urlFlowMin');
+                if (urlFlowMinElement) urlFlowMinElement.textContent = predictionData.flowmin;
+
+                // Only show predicted values display if it's a URL input, or if explicitly needed for manual
+                if (isUrlInput) {
+                    if (predictedValuesDisplay) predictedValuesDisplay.style.display = 'block';
+                } else {
+                    // For manual input, we don't need to show the "Simulated Traffic Parameters from URL" section
+                    if (predictedValuesDisplay) predictedValuesDisplay.style.display = 'none';
+                }
+
+
+            } else {
+                console.error("Proxy API response structure unexpected or empty candidates:", result);
+                if (threatDisplay) threatDisplay.style.display = 'none';
+                if (predictedValuesDisplay) {
+                    predictedValuesDisplay.style.display = 'block';
+                    predictedValuesDisplay.innerHTML = '<p style="color: yellow;">Could not get detailed prediction. Displaying default values.</p>';
+                }
+                fillPredictedValuesWithDefaults();
+            }
+
+        } catch (error) {
+            console.error("Error analyzing traffic via proxy:", error);
+            if (threatDisplay) threatDisplay.style.display = 'none';
+            if (predictedValuesDisplay) {
+                predictedValuesDisplay.style.display = 'block';
+                predictedValuesDisplay.innerHTML = `<p style="color: red;">Error analyzing traffic. Please try again. Details: ${error.message}</p>`;
+            }
+            fillPredictedValuesWithDefaults();
+        } finally {
+            if (btn) { // Check if button exists before resetting
+                btn.innerHTML = originalBtnText;
+                btn.disabled = false;
+            }
+        }
+    }
+
+    // Helper to fill predicted values with benign defaults on error
+    function fillPredictedValuesWithDefaults() {
+        const urlFwdBytesElement = document.getElementById('urlFwdBytes');
+        if (urlFwdBytesElement) urlFwdBytesElement.textContent = '1500';
+        const urlFwdMinElement = document.getElementById('urlFwdMin');
+        if (urlFwdMinElement) urlFwdMinElement.textContent = '30';
+        const urlIdleMaxElement = document.getElementById('urlIdleMax');
+        if (urlIdleMaxElement) urlIdleMaxElement.textContent = '600000';
+        const urlBwdMinElement = document.getElementById('urlBwdMin');
+        if (urlBwdMinElement) urlBwdMinElement.textContent = '5';
+        const urlIdleMeanElement = document.getElementById('urlIdleMean');
+        if (urlIdleMeanElement) urlIdleMeanElement.textContent = '300000';
+        const urlIdleMinElement = document.getElementById('urlIdleMin');
+        if (urlIdleMinElement) urlIdleMinElement.textContent = '1000';
+        const urlBwdBytesElement = document.getElementById('urlBwdBytes');
+        if (urlBwdBytesElement) urlBwdBytesElement.textContent = '1200';
+        const urlPktLenMinElement = document.getElementById('urlPktLenMin');
+        if (urlPktLenMinElement) urlPktLenMinElement.textContent = '25';
+        const urlPktLenMaxElement = document.getElementById('urlPktLenMax');
+        if (urlPktLenMaxElement) urlPktLenMaxElement.textContent = '1100';
+        const urlFlowMinElement = document.getElementById('urlFlowMin');
+        if (urlFlowMinElement) urlFlowMinElement.textContent = '80';
+
+        const leakedDetailsDisplayElement = document.getElementById('leakedDetailsDisplay');
+        if (leakedDetailsDisplayElement) leakedDetailsDisplayElement.innerHTML = '<strong>Leaked Details:</strong> N/A';
+        const attackTypeNameDisplayElement = document.getElementById('attackTypeNameDisplay');
+        if (attackTypeNameDisplayElement) attackTypeNameDisplayElement.innerHTML = '<strong>Attack Type:</strong> N/A';
+        const attackDescriptionDisplayElement = document.getElementById('attackDescriptionDisplay');
+        if (attackDescriptionDisplayElement) attackDescriptionDisplayElement.innerHTML = '<strong>Description:</strong> N/A';
+    }
+
+
+    // Function to copy displayed URL values to the manual input form
+    function copyUrlValuesToForm() {
+        const fwdbytesElement = document.getElementById('fwdbytes');
+        if (fwdbytesElement) fwdbytesElement.value = document.getElementById('urlFwdBytes').textContent;
+        const fwdminElement = document.getElementById('fwdmin');
+        if (fwdminElement) fwdminElement.value = document.getElementById('urlFwdMin').textContent;
+        const idlemaxElement = document.getElementById('idlemax');
+        if (idlemaxElement) idlemaxElement.value = document.getElementById('urlIdleMax').textContent;
+        const bwdminElement = document.getElementById('bwdmin');
+        if (bwdminElement) bwdminElement.value = document.getElementById('urlBwdMin').textContent;
+        const idlemeanElement = document.getElementById('idlemean');
+        if (idlemeanElement) idlemeanElement.value = document.getElementById('urlIdleMean').textContent;
+        const idleminElement = document.getElementById('idlemin');
+        if (idleminElement) idleminElement.value = document.getElementById('urlIdleMin').textContent;
+        const bwdbytesElement = document.getElementById('bwdbytes');
+        if (bwdbytesElement) bwdbytesElement.value = document.getElementById('urlBwdBytes').textContent;
+        const pktlenminElement = document.getElementById('pktlenmin');
+        if (pktlenminElement) pktlenminElement.value = document.getElementById('urlPktLenMin').textContent;
+        const pktlenmaxElement = document.getElementById('pktlenmax');
+        if (pktlenmaxElement) pktlenmaxElement.value = document.getElementById('urlPktLenMax').textContent;
+        const flowminElement = document.getElementById('flowmin');
+        if (flowminElement) flowminElement.value = document.getElementById('urlFlowMin').textContent;
+
+        // Provide a visual feedback to the user
+        const copyBtn = document.getElementById('copyValuesBtn');
+        if (copyBtn) { // Check if button exists
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
+        }
+    }
+
+
+    // Event listener for manual form submission (now uses API)
+    document.getElementById('threatPredictionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log("Manual form submitted.");
+        const inputData = {
+            fwdbytes: document.getElementById('fwdbytes').value,
+            fwdmin: document.getElementById('fwdmin').value,
+            idlemax: document.getElementById('idlemax').value,
+            bwdmin: document.getElementById('bwdmin').value,
+            idlemean: document.getElementById('idlemean').value,
+            idlemin: document.getElementById('idlemin').value,
+            bwdbytes: document.getElementById('bwdbytes').value,
+            pktlenmin: document.getElementById('pktlenmin').value,
+            pktlenmax: document.getElementById('pktlenmax').value,
+            flowmin: document.getElementById('flowmin').value
+        };
+        analyzeTrafficWithApi(inputData, false); // Pass false for isUrlInput
     });
+
+    // Event listener for URL analysis button (uses API)
+    document.getElementById('predictUrlBtn').addEventListener('click', function() {
+        console.log("URL analysis button clicked.");
+        const urlInput = document.getElementById('urlInput');
+        if (urlInput && urlInput.checkValidity()) { // Check if urlInput exists and is valid
+            analyzeTrafficWithApi({ url: urlInput.value }, true); // Pass true for isUrlInput
+        } else if (urlInput) {
+            urlInput.reportValidity(); // Show browser's built-in validation message
+        }
+    });
+
+    // Event listener for the new Copy Values button
+    const copyValuesBtn = document.getElementById('copyValuesBtn');
+    if (copyValuesBtn) {
+        copyValuesBtn.addEventListener('click', copyUrlValuesToForm);
+    }
+
 </script>
 </body>
 </html>

@@ -1,10 +1,13 @@
+# drakweb/settings.py
+
 from pathlib import Path
+import os # Import os module for path operations
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'your-secret-key-here'
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = 'your-secret-key-here' # KEEP THIS SECRET IN PRODUCTION
+DEBUG = True # Set to False in production
+ALLOWED_HOSTS = [] # Add your domain names here in production, e.g., ['yourdomain.com', 'www.yourdomain.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -13,7 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myapp',  # your app
+    'myapp',  # Your application name
 ]
 
 MIDDLEWARE = [
@@ -31,8 +34,8 @@ ROOT_URLCONF = 'drakweb.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # or add your templates dir here
-        'APP_DIRS': True,  # important for loading app templates & static files
+        'DIRS': [],  # You can add project-wide template directories here if needed
+        'APP_DIRS': True,  # This is crucial for Django to find templates inside each app's 'templates' folder
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -60,8 +63,13 @@ USE_TZ = True
 
 # Static files configuration
 STATIC_URL = '/static/'
+# This defines where Django will look for static files when you run `collectstatic`
+# and helps the development server locate them.
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# No need to add STATICFILES_DIRS if your static files are inside app directories
-# Django will find static files inside myapp/static/
+# Add your Gemini API Key here (for development purposes)
+# For production, consider using environment variables:
+# GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'default-fallback-key-if-not-set')
+GEMINI_API_KEY = 'AIzaSyBGyYz72RjipMSLkq5KoHupM02-X5ZPeVY' # Your actual key
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
