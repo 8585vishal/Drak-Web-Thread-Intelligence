@@ -1,1 +1,27 @@
-"<paste the above content>" 
+# Ignore virtual environment folder
+venv/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore database file
+db.sqlite3
+
+# Ignore model files
+*.pkl
+
+# Ignore static files cache
+myapp/static/
+
+# Ignore other common files
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+ENV/
+env.bak/
+venv.bak/
